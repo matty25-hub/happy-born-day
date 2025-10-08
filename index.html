@@ -20,58 +20,150 @@
             align-items: center;
             padding: 20px;
             overflow: hidden;
+            perspective: 1500px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                perspective: 1000px;
+            }
         }
 
         .book-container {
-            perspective: 2000px;
             display: flex;
             justify-content: center;
             align-items: center;
+            transform-style: preserve-3d;
         }
 
         .book {
-            width: 700px;
-            height: 500px;
             position: relative;
-            display: flex;
+            width: 400px;
+            height: 550px;
+            transform-style: preserve-3d;
+            transition: transform 1.5s ease;
         }
 
-        .book-half {
-            width: 350px;
-            height: 500px;
-            position: relative;
+        .book.closed {
+            transform: rotateY(-5deg);
         }
 
-        .book-half.left {
-            transform-origin: right center;
+        .book.closed .book-cover {
+            transform: rotateY(0deg);
         }
 
-        .book-half.right {
-            transform-origin: left center;
-        }
-
-        .page {
-            position: absolute;
-            width: 350px;
-            height: 500px;
-            background: linear-gradient(to right, #ffeef8 0%, #fff5f9 100%);
-            border: 2px solid #d4a5d4;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            padding: 50px 30px;
-            overflow-y: auto;
+        .book.closed .pages-container {
             display: none;
         }
 
-        .page.active {
+        .book.open {
+            transform: rotateY(0deg);
+        }
+
+        .book.open .pages-container {
             display: block;
         }
 
-        .page.left-page {
-            border-right: 1px solid #e0b0e0;
+        /* Book Cover */
+        .book-cover {
+            position: absolute;
+            width: 400px;
+            height: 550px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 3px solid #fff;
+            border-radius: 0 8px 8px 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.5s ease;
+            box-shadow: 5px 5px 30px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .page.right-page {
-            border-left: 1px solid #e0b0e0;
+        .book.open .book-cover {
+            transform: rotateY(-160deg);
+        }
+
+        /* Book Spine */
+        .book-spine {
+            position: absolute;
+            width: 50px;
+            height: 550px;
+            background: linear-gradient(to right, #d5006d 0%, #f093fb 50%, #d5006d 100%);
+            left: -50px;
+            transform-origin: right center;
+            transform: rotateY(90deg);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        /* Pages Container */
+        .pages-container {
+            position: absolute;
+            width: 400px;
+            height: 550px;
+            left: 0;
+            display: flex;
+        }
+
+        .page-side {
+            width: 400px;
+            height: 550px;
+            position: absolute;
+            background: linear-gradient(to right, #ffeef8 0%, #fff5f9 100%);
+            border: 2px solid #d4a5d4;
+            box-shadow: -5px 5px 30px rgba(0,0,0,0.3);
+            padding: 50px 40px;
+            overflow-y: auto;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            transition: transform 0.8s ease;
+            backface-visibility: visible;
+        }
+
+        .page-side.left {
+            transform: rotateY(0deg);
+            z-index: 5;
+        }
+
+        .page-side.right {
+            transform: rotateY(-160deg) translateZ(2px);
+            z-index: 1;
+        }
+
+        .page-side.flipping {
+            animation: pageFlipForward 0.8s ease forwards;
+        }
+
+        @keyframes pageFlipForward {
+            0% { 
+                transform: rotateY(0deg) rotateX(0deg);
+                z-index: 10;
+            }
+            50% {
+                transform: rotateY(-80deg) rotateX(-15deg);
+            }
+            100% { 
+                transform: rotateY(-160deg) rotateX(0deg);
+                z-index: 1;
+            }
+        }
+
+        @keyframes pageFlipBackward {
+            0% { 
+                transform: rotateY(-160deg) rotateX(0deg);
+                z-index: 1;
+            }
+            50% {
+                transform: rotateY(-80deg) rotateX(-15deg);
+            }
+            100% { 
+                transform: rotateY(0deg) rotateX(0deg);
+                z-index: 10;
+            }
         }
 
         .page-content {
@@ -81,21 +173,27 @@
             justify-content: flex-start;
             align-items: center;
             text-align: center;
-            padding-top: 20px;
         }
 
-        .cover {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border: 3px solid #fff;
+        .cover-content {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            height: 100%;
         }
 
-        .cover h1 {
+        .emoji {
+            font-size: 70px;
+            animation: bounce 2s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        h1 {
             font-size: 42px;
             margin: 20px 0;
             animation: glow 2s ease-in-out infinite alternate;
@@ -106,17 +204,7 @@
             to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.8); }
         }
 
-        .cover .emoji {
-            font-size: 70px;
-            animation: bounce 1s ease infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .cover .subtitle {
+        .subtitle {
             font-size: 20px;
             margin-top: 20px;
             font-style: italic;
@@ -125,7 +213,7 @@
         h2 {
             color: #c2185b;
             margin-bottom: 20px;
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
         }
 
@@ -142,16 +230,40 @@
             border-radius: 15px;
             border: 2px dashed #f5576c;
             margin: 15px 0;
+            width: 100%;
         }
 
-        .blank-page {
-            background: linear-gradient(to bottom, 
-                transparent 0%, 
-                transparent calc(100% - 2px), 
-                #d4a5d4 calc(100% - 2px), 
-                #d4a5d4 100%);
-            background-size: 100% 35px;
-            min-height: 400px;
+        .open-book-btn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 25px 50px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+            font-weight: bold;
+            z-index: 2000;
+            animation: pulse 2s ease infinite;
+        }
+
+        .open-book-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        .open-book-btn.hidden {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
         }
 
         .controls {
@@ -160,6 +272,10 @@
             display: flex;
             gap: 20px;
             z-index: 1000;
+        }
+
+        .controls.hidden {
+            display: none;
         }
 
         button {
@@ -185,14 +301,18 @@
             cursor: not-allowed;
         }
 
-        .page-number {
-            position: relative;
-            text-align: right;
-            margin-top: 20px;
-            padding-right: 10px;
-            color: #c2185b;
-            font-size: 14px;
-            font-weight: bold;
+        .page-indicator {
+            position: fixed;
+            top: 20px;
+            color: white;
+            font-size: 16px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        .page-indicator.hidden {
+            display: none;
         }
 
         .heart {
@@ -215,33 +335,53 @@
             50% { opacity: 0.3; }
         }
 
-        .page-indicator {
-            position: fixed;
-            top: 20px;
-            color: white;
-            font-size: 16px;
-            background: rgba(0,0,0,0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
+        .page-number {
+            margin-top: 20px;
+            text-align: right;
+            color: #c2185b;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .page-hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="page-indicator" id="pageIndicator">Page 1 of 12</div>
+    <button class="open-book-btn" id="openBookBtn" onclick="openBook()">🎁 Open Your Gift 🎁</button>
+
+    <div class="page-indicator hidden" id="pageIndicator">Page 1 of 7</div>
 
     <div class="book-container">
-        <div class="book">
-            <div class="book-half left">
-                <div class="page left-page active cover" data-page="0">
+        <div class="book closed" id="book">
+            <div class="book-spine"></div>
+            
+            <div class="book-cover">
+                <div class="cover-content">
+                    <div class="emoji">🎁</div>
+                    <h1>Made With Care</h1>
+                    <p style="color: white; font-size: 20px;">For My Bestie</p>
+                    <div class="emoji">💝</div>
+                    <p style="color: white; font-style: italic; margin-top: 30px;">Happy Birthday, Angry Bird!<br>Stay Blessed Always! ✨</p>
+                </div>
+            </div>
+
+            <div class="pages-container">
+                <!-- Page 1 -->
+                <div class="page-side left" id="page1" data-page="1">
                     <div class="page-content">
-                        <div class="emoji">🎂</div>
-                        <h1>Happy Birthday<br>Dear Angry Bird</h1>
-                        <div class="emoji">🐦❤️</div>
-                        <div class="subtitle">Ek Khaas Din, Ek Khaas Dost Ke Liye</div>
+                        <h2>Janamdin Mubarak Ho! <span class="sparkle">✨</span></h2>
+                        <p>Aaj ka din sirf tere liye hai, meri pyari <span class="heart">♥️</span> Angry Bird!</p>
+                        <p>Pichle 1.5 saal mein itne beautiful moments dekhe hain. Teri har smile, har gussa, har baat... sab kuch special hai!</p>
+                        <p>Aaj tere birthday par bas yahi chahta hoon ki teri life khushiyon se bhari rahe, tere sapne poore ho, aur tu hamesha aise hi muskurati rahe!</p>
+                        <p><strong>May this year bring you endless joy, success, aur bohot saari neend! 😴💕</strong></p>
+                        <div class="page-number">1</div>
                     </div>
                 </div>
 
-                <div class="page left-page" data-page="2">
+                <!-- Page 2 -->
+                <div class="page-side left page-hidden" id="page2" data-page="2">
                     <div class="page-content">
                         <h2>Angry Bird Ka Secret! 🐦😤</h2>
                         <div class="joke-box">
@@ -250,80 +390,12 @@
                             <p>Par sach batau... tera gussa bhi cute hai! Jab tu naak chadhati hai na, tab dekh ke hasne pe pet dukh jaata hai! 🤭</p>
                             <p><em>"Gussa to bohot aata hai, par dil bada saaf hai!"</em></p>
                         </div>
-                    </div>
-                    <div class="page-number">2</div>
-                </div>
-
-                <div class="page left-page" data-page="4">
-                    <div class="page-content">
-                        <h2>Dil Ki Baatein <span class="heart">♥️</span></h2>
-                        <p>Tujhe rota hua dekh ke... haan main joke karta hoon, par sach mein dil toot jaata hai.</p>
-                        <p>Teri har smile mere liye precious hai. Teri khushi meri khushi hai.</p>
-                        <p>Iss 1.5 saal mein tune mujhe itna kuch sikhaya hai - friendship ka matlab, care ka matlab, aur sachche dost hone ka matlab.</p>
-                        <p><strong>Thank you for being YOU! ✨</strong></p>
-                        <p><em>Aur haan, promise hai tujhe kabhi deliberately rona nahi padega! 🤗</em></p>
-                    </div>
-                    <div class="page-number">4</div>
-                </div>
-
-                <div class="page left-page" data-page="6">
-                    <div class="page-content">
-                        <h2>Hamari Yaadein 📸</h2>
-                        <p>Pichle 1.5 saal mein kitne hi beautiful moments share kiye hain humne!</p>
-                        <p>Tumhari har silly baat, tumhare tantrums, late night conversations, funny moments... sab kuch yaad hai.</p>
-                        <p>Aur sabse important - tumne mujhe samjha, support kiya, aur hamesha saath diya.</p>
-                        <p><strong>Yeh friendship lifelong hai! 👫✨</strong></p>
-                        <p><em>Aage aur bhi bohot saari yaadein banani hai humein!</em></p>
-                    </div>
-                    <div class="page-number">6</div>
-                </div>
-
-                <div class="page left-page" data-page="8">
-                    <div class="page-content">
-                        <h2>Ek Khaas Message 💌</h2>
-                        <p>Dear Angry Bird,</p>
-                        <p>Tumhe pata hai na ki tum kitni special ho? Not just for me, but for everyone around you.</p>
-                        <p>Tumhari presence hi kaafi hai kisi ka din better banane ke liye.</p>
-                        <p>Aaj tumhara birthday hai, toh main chahta/chahti hoon ki tumhe feel ho ki kitne special ho tum!</p>
-                        <p>Never change, my dear friend. Tum perfect ho jaise bhi ho - gusse wali, sleepy, emotional, funny... sab versions beautiful hain! 🌸</p>
-                        <p><strong>Happy Birthday once again! 🎉🎂</strong></p>
-                    </div>
-                    <div class="page-number">8</div>
-                </div>
-
-                <div class="page left-page blank-page" data-page="10">
-                    <div class="page-content" style="justify-content: flex-start; align-items: flex-start;">
-                        <h2 style="text-align: center; width: 100%;">Aur Bhi Jagah Hai! 📝</h2>
-                        <p style="text-align: center; font-style: italic; color: #c2185b;">Apne thoughts share karo yahaan!</p>
-                        <div style="height: 300px; width: 100%;"></div>
-                    </div>
-                    <div class="page-number">10</div>
-                </div>
-
-                <div class="page left-page cover" data-page="12">
-                    <div class="page-content">
-                        <div class="emoji">🎁</div>
-                        <h1 style="font-size: 32px;">Made With Care</h1>
-                        <p style="color: white; font-size: 18px;">For My Bestie</p>
-                        <div class="emoji">💝</div>
-                        <p style="color: white; font-style: italic; margin-top: 30px;">Happy Birthday, Angry Bird!<br>Stay Blessed Always! ✨</p>
+                        <div class="page-number">2</div>
                     </div>
                 </div>
-            </div>
 
-            <div class="book-half right">
-                <div class="page right-page active" data-page="1">
-                    <div class="page-content">
-                        <h2>Janamdin Mubarak Ho! <span class="sparkle">✨</span></h2>
-                        <p>Aaj ka din sirf tere liye hai, meri pyari <span class="heart">♥️</span> Angry Bird!</p>
-                        <p>Pichle 1.5 saal mein itne beautiful moments dekhe hain. Teri har smile, har gussa, har baat... sab kuch special hai!</p>
-                        <p>Aaj tere birthday par bas yahi chahta hoon ki teri life khushiyon se bhari rahe, tere sapne poore ho, aur tu hamesha aise hi muskurati rahe!</p>
-                        <p><strong>May this year bring you endless joy, success, aur bohot saari neend! 😴💕</strong></p>
-                    </div>
-                    <div class="page-number">1</div>
-                </div>
-
-                <div class="page right-page" data-page="3">
+                <!-- Page 3 -->
+                <div class="page-side left page-hidden" id="page3" data-page="3">
                     <div class="page-content">
                         <h2>Daant Expert! 😤🗣️</h2>
                         <div class="joke-box">
@@ -333,11 +405,25 @@
                             <p>Tu gussa karti hai, toh main daant deta hoon. Tu kuch galat karti hai, toh main daant deta hoon. Bas daatna hi mera full-time job ban gaya hai! 🤭</p>
                             <p><em>Par sach batau... daatne ke baad feel karta hoon ki zyada ho gaya, sorry! 💕</em></p>
                         </div>
+                        <div class="page-number">3</div>
                     </div>
-                    <div class="page-number">3</div>
                 </div>
 
-                <div class="page right-page" data-page="5">
+                <!-- Page 4 -->
+                <div class="page-side left page-hidden" id="page4" data-page="4">
+                    <div class="page-content">
+                        <h2>Dil Ki Baatein <span class="heart">♥️</span></h2>
+                        <p>Tujhe rota hua dekh ke... haan main joke karta hoon, par sach mein dil toot jaata hai.</p>
+                        <p>Teri har smile mere liye precious hai. Teri khushi meri khushi hai.</p>
+                        <p>Iss 1.5 saal mein tune mujhe itna kuch sikhaya hai - friendship ka matlab, care ka matlab, aur sachche dost hone ka matlab.</p>
+                        <p><strong>Thank you for being YOU! ✨</strong></p>
+                        <p><em>Aur haan, promise hai tujhe kabhi deliberately rona nahi padega! 🤗</em></p>
+                        <div class="page-number">4</div>
+                    </div>
+                </div>
+
+                <!-- Page 5 -->
+                <div class="page-side left page-hidden" id="page5" data-page="5">
                     <div class="page-content">
                         <h2>Teri Qualities! 😄</h2>
                         <div class="joke-box">
@@ -347,11 +433,12 @@
                             <p><strong>🎭 Drama Queen:</strong> Every emotion 100% real aur intense!</p>
                             <p><strong>❤️ Best Friend Ever:</strong> Dil ka bohot saaf, intentions pure gold!</p>
                         </div>
+                        <div class="page-number">5</div>
                     </div>
-                    <div class="page-number">5</div>
                 </div>
 
-                <div class="page right-page" data-page="7">
+                <!-- Page 6 -->
+                <div class="page-side left page-hidden" id="page6" data-page="6">
                     <div class="page-content">
                         <h2>Meri Kwahishey <span class="sparkle">🌟</span></h2>
                         <p>💝 Teri life mein hamesha khushiyan rahe</p>
@@ -361,20 +448,12 @@
                         <p>💪 Tujhe success mile har field mein</p>
                         <p>👯 Hamari friendship aur mazboot ho</p>
                         <p><strong>Aur sabse important - tu hamesha healthy aur happy rahe! 💕</strong></p>
+                        <div class="page-number">6</div>
                     </div>
-                    <div class="page-number">7</div>
                 </div>
 
-                <div class="page right-page blank-page" data-page="9">
-                    <div class="page-content" style="justify-content: flex-start; align-items: flex-start;">
-                        <h2 style="text-align: center; width: 100%;">Teri Baatein ✍️</h2>
-                        <p style="text-align: center; font-style: italic; color: #c2185b;">Yahan tu apni feelings, thoughts, ya kuch bhi likh sakti hai!</p>
-                        <div style="height: 300px; width: 100%;"></div>
-                    </div>
-                    <div class="page-number">9</div>
-                </div>
-
-                <div class="page right-page" data-page="11">
+                <!-- Page 7 -->
+                <div class="page-side left page-hidden" id="page7" data-page="7">
                     <div class="page-content">
                         <h2>The End... Nahi! ✨</h2>
                         <p><strong>Yeh ending nahi hai...</strong></p>
@@ -385,69 +464,103 @@
                             <p><em>"Khush raho, Muskurati raho,<br>Aur haan... thoda gussa bhi karti raho,<br>Warna Angry Bird nahi rahegi! 😂💕"</em></p>
                         </div>
                         <p><strong>You're the best, my dear Angry Bird! 🐦❤️</strong></p>
+                        <div class="page-number">7</div>
                     </div>
-                    <div class="page-number">11</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="controls">
+    <div class="controls hidden" id="controls">
         <button id="prevBtn" onclick="previousPage()">◀ Previous</button>
         <button id="nextBtn" onclick="nextPage()">Next ▶</button>
     </div>
 
     <script>
-        let currentSpread = 0;
-        const totalSpreads = 6;
+        let currentPage = 0;
+        const totalPages = 7;
+        let bookOpened = false;
 
-        function updatePages() {
-            const allPages = document.querySelectorAll('.page');
-            allPages.forEach(page => page.classList.remove('active'));
+        function openBook() {
+            if (!bookOpened) {
+                bookOpened = true;
+                document.getElementById('book').classList.remove('closed');
+                document.getElementById('book').classList.add('open');
+                document.getElementById('openBookBtn').classList.add('hidden');
+                
+                setTimeout(() => {
+                    document.getElementById('controls').classList.remove('hidden');
+                    document.getElementById('pageIndicator').classList.remove('hidden');
+                    showPage(1);
+                }, 1500);
+            }
+        }
 
-            const leftPage = currentSpread * 2;
-            const rightPage = leftPage + 1;
+        function showPage(pageNum) {
+            const allPages = document.querySelectorAll('.page-side');
+            allPages.forEach(page => {
+                page.classList.add('page-hidden');
+                page.classList.remove('flipping');
+            });
 
-            const leftPageElement = document.querySelector(`[data-page="${leftPage}"]`);
-            const rightPageElement = document.querySelector(`[data-page="${rightPage}"]`);
-
-            if (leftPageElement) leftPageElement.classList.add('active');
-            if (rightPageElement) rightPageElement.classList.add('active');
+            const currentPageElement = document.getElementById(`page${pageNum}`);
+            if (currentPageElement) {
+                currentPageElement.classList.remove('page-hidden');
+            }
 
             updateButtons();
             updateIndicator();
         }
 
         function updateButtons() {
-            document.getElementById('prevBtn').disabled = currentSpread === 0;
-            document.getElementById('nextBtn').disabled = currentSpread >= totalSpreads;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
         }
 
         function updateIndicator() {
-            const pageNum = (currentSpread * 2) + 1;
-            document.getElementById('pageIndicator').textContent = `Page ${pageNum}-${pageNum + 1} of 12`;
+            document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
         }
 
         function nextPage() {
-            if (currentSpread < totalSpreads) {
-                currentSpread++;
-                updatePages();
+            if (currentPage < totalPages) {
+                const currentPageElement = document.getElementById(`page${currentPage}`);
+                if (currentPageElement) {
+                    currentPageElement.classList.add('flipping');
+                }
+                
+                setTimeout(() => {
+                    currentPage++;
+                    showPage(currentPage);
+                }, 800);
             }
         }
 
         function previousPage() {
-            if (currentSpread > 0) {
-                currentSpread--;
-                updatePages();
+            if (currentPage > 1) {
+                const nextPageElement = document.getElementById(`page${currentPage}`);
+                if (nextPageElement) {
+                    nextPageElement.style.animation = 'pageFlipBackward 0.8s ease forwards';
+                    
+                    setTimeout(() => {
+                        currentPage--;
+                        showPage(currentPage);
+                        if (nextPageElement) {
+                            nextPageElement.style.animation = '';
+                        }
+                    }, 800);
+                } else {
+                    currentPage--;
+                    showPage(currentPage);
+                }
             }
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextPage();
-            if (e.key === 'ArrowLeft') previousPage();
+            if (bookOpened) {
+                if (e.key === 'ArrowRight') nextPage();
+                if (e.key === 'ArrowLeft') previousPage();
+            }
         });
-
-        updatePages();
     </script>
 </body>
 </html>
