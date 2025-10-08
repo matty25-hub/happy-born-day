@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Dear Angry Bird 🎂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .book-container {
+            perspective: 2000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .book {
+            width: 700px;
+            height: 500px;
+            position: relative;
+            display: flex;
+        }
+
+        .book-half {
+            width: 350px;
+            height: 500px;
+            position: relative;
+        }
+
+        .book-half.left {
+            transform-origin: right center;
+        }
+
+        .book-half.right {
+            transform-origin: left center;
+        }
+
+        .page {
+            position: absolute;
+            width: 350px;
+            height: 500px;
+            background: linear-gradient(to right, #ffeef8 0%, #fff5f9 100%);
+            border: 2px solid #d4a5d4;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 50px 30px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page.left-page {
+            border-right: 1px solid #e0b0e0;
+        }
+
+        .page.right-page {
+            border-left: 1px solid #e0b0e0;
+        }
+
+        .page-content {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .cover {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 3px solid #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover h1 {
+            font-size: 42px;
+            margin: 20px 0;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.5); }
+            to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.8); }
+        }
+
+        .cover .emoji {
+            font-size: 70px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .cover .subtitle {
+            font-size: 20px;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        h2 {
+            color: #c2185b;
+            margin-bottom: 20px;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #333;
+            margin: 12px 0;
+        }
+
+        .joke-box {
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px dashed #f5576c;
+            margin: 15px 0;
+        }
+
+        .blank-page {
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                transparent calc(100% - 2px), 
+                #d4a5d4 calc(100% - 2px), 
+                #d4a5d4 100%);
+            background-size: 100% 35px;
+            min-height: 400px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-number {
+            position: relative;
+            text-align: right;
+            margin-top: 20px;
+            padding-right: 10px;
+            color: #c2185b;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .heart {
+            color: #f5576c;
+            animation: heartbeat 1.5s ease infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+        }
+
+        .sparkle {
+            display: inline-block;
+            animation: sparkle 1.5s ease infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .page-indicator {
+            position: fixed;
+            top: 20px;
+            color: white;
+            font-size: 16px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-indicator" id="pageIndicator">Page 1 of 12</div>
+
+    <div class="book-container">
+        <div class="book">
+            <div class="book-half left">
+                <div class="page left-page active cover" data-page="0">
+                    <div class="page-content">
+                        <div class="emoji">🎂</div>
+                        <h1>Happy Birthday<br>Dear Angry Bird</h1>
+                        <div class="emoji">🐦❤️</div>
+                        <div class="subtitle">Ek Khaas Din, Ek Khaas Dost Ke Liye</div>
+                    </div>
+                </div>
+
+                <div class="page left-page" data-page="2">
+                    <div class="page-content">
+                        <h2>Angry Bird Ka Secret! 🐦😤</h2>
+                        <div class="joke-box">
+                            <p><strong>Pata hai tera naam Angry Bird kyun pada?</strong></p>
+                            <p>Kyunki recently tu itna gussa karti thi ki lagta tha real Angry Bird game chal raha hai! 😂</p>
+                            <p>Par sach batau... tera gussa bhi cute hai! Jab tu naak chadhati hai na, tab dekh ke hasne pe pet dukh jaata hai! 🤭</p>
+                            <p><em>"Gussa to bohot aata hai, par dil bada saaf hai!"</em></p>
+                        </div>
+                    </div>
+                    <div class="page-number">2</div>
+                </div>
+
+                <div class="page left-page" data-page="4">
+                    <div class="page-content">
+                        <h2>Dil Ki Baatein <span class="heart">♥️</span></h2>
+                        <p>Tujhe rota hua dekh ke... haan main joke karta hoon, par sach mein dil toot jaata hai.</p>
+                        <p>Teri har smile mere liye precious hai. Teri khushi meri khushi hai.</p>
+                        <p>Iss 1.5 saal mein tune mujhe itna kuch sikhaya hai - friendship ka matlab, care ka matlab, aur sachche dost hone ka matlab.</p>
+                        <p><strong>Thank you for being YOU! ✨</strong></p>
+                        <p><em>Aur haan, promise hai tujhe kabhi deliberately rona nahi padega! 🤗</em></p>
+                    </div>
+                    <div class="page-number">4</div>
+                </div>
+
+                <div class="page left-page" data-page="6">
+                    <div class="page-content">
+                        <h2>Hamari Yaadein 📸</h2>
+                        <p>Pichle 1.5 saal mein kitne hi beautiful moments share kiye hain humne!</p>
+                        <p>Tumhari har silly baat, tumhare tantrums, late night conversations, funny moments... sab kuch yaad hai.</p>
+                        <p>Aur sabse important - tumne mujhe samjha, support kiya, aur hamesha saath diya.</p>
+                        <p><strong>Yeh friendship lifelong hai! 👫✨</strong></p>
+                        <p><em>Aage aur bhi bohot saari yaadein banani hai humein!</em></p>
+                    </div>
+                    <div class="page-number">6</div>
+                </div>
+
+                <div class="page left-page" data-page="8">
+                    <div class="page-content">
+                        <h2>Ek Khaas Message 💌</h2>
+                        <p>Dear Angry Bird,</p>
+                        <p>Tumhe pata hai na ki tum kitni special ho? Not just for me, but for everyone around you.</p>
+                        <p>Tumhari presence hi kaafi hai kisi ka din better banane ke liye.</p>
+                        <p>Aaj tumhara birthday hai, toh main chahta/chahti hoon ki tumhe feel ho ki kitne special ho tum!</p>
+                        <p>Never change, my dear friend. Tum perfect ho jaise bhi ho - gusse wali, sleepy, emotional, funny... sab versions beautiful hain! 🌸</p>
+                        <p><strong>Happy Birthday once again! 🎉🎂</strong></p>
+                    </div>
+                    <div class="page-number">8</div>
+                </div>
+
+                <div class="page left-page blank-page" data-page="10">
+                    <div class="page-content" style="justify-content: flex-start; align-items: flex-start;">
+                        <h2 style="text-align: center; width: 100%;">Aur Bhi Jagah Hai! 📝</h2>
+                        <p style="text-align: center; font-style: italic; color: #c2185b;">Apne thoughts share karo yahaan!</p>
+                        <div style="height: 300px; width: 100%;"></div>
+                    </div>
+                    <div class="page-number">10</div>
+                </div>
+
+                <div class="page left-page cover" data-page="12">
+                    <div class="page-content">
+                        <div class="emoji">🎁</div>
+                        <h1 style="font-size: 32px;">Made With Care</h1>
+                        <p style="color: white; font-size: 18px;">For My Bestie</p>
+                        <div class="emoji">💝</div>
+                        <p style="color: white; font-style: italic; margin-top: 30px;">Happy Birthday, Angry Bird!<br>Stay Blessed Always! ✨</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book-half right">
+                <div class="page right-page active" data-page="1">
+                    <div class="page-content">
+                        <h2>Janamdin Mubarak Ho! <span class="sparkle">✨</span></h2>
+                        <p>Aaj ka din sirf tere liye hai, meri pyari <span class="heart">♥️</span> Angry Bird!</p>
+                        <p>Pichle 1.5 saal mein itne beautiful moments dekhe hain. Teri har smile, har gussa, har baat... sab kuch special hai!</p>
+                        <p>Aaj tere birthday par bas yahi chahta hoon ki teri life khushiyon se bhari rahe, tere sapne poore ho, aur tu hamesha aise hi muskurati rahe!</p>
+                        <p><strong>May this year bring you endless joy, success, aur bohot saari neend! 😴💕</strong></p>
+                    </div>
+                    <div class="page-number">1</div>
+                </div>
+
+                <div class="page right-page" data-page="3">
+                    <div class="page-content">
+                        <h2>Daant Expert! 😤🗣️</h2>
+                        <div class="joke-box">
+                            <p><strong>Agar daatne ka World Championship hota...</strong></p>
+                            <p>Toh main pakka winner hota! 🏆</p>
+                            <p>Subah daanta, dopahar daanta, raat ko bhi daanta... bas daatna hi kaam hai mera! 😂</p>
+                            <p>Tu gussa karti hai, toh main daant deta hoon. Tu kuch galat karti hai, toh main daant deta hoon. Bas daatna hi mera full-time job ban gaya hai! 🤭</p>
+                            <p><em>Par sach batau... daatne ke baad feel karta hoon ki zyada ho gaya, sorry! 💕</em></p>
+                        </div>
+                    </div>
+                    <div class="page-number">3</div>
+                </div>
+
+                <div class="page right-page" data-page="5">
+                    <div class="page-content">
+                        <h2>Teri Qualities! 😄</h2>
+                        <div class="joke-box">
+                            <p><strong>🐦 Expert Level Gussa:</strong> Zero se hero in 2 seconds!</p>
+                            <p><strong>🚫 Plan Cancel Karne Mein PhD:</strong> "Aaungi" bolti hai, aati nahi! 😂</p>
+                            <p><strong>💝 Cuteness Overload:</strong> Even angry mode mein adorable!</p>
+                            <p><strong>🎭 Drama Queen:</strong> Every emotion 100% real aur intense!</p>
+                            <p><strong>❤️ Best Friend Ever:</strong> Dil ka bohot saaf, intentions pure gold!</p>
+                        </div>
+                    </div>
+                    <div class="page-number">5</div>
+                </div>
+
+                <div class="page right-page" data-page="7">
+                    <div class="page-content">
+                        <h2>Meri Kwahishey <span class="sparkle">🌟</span></h2>
+                        <p>💝 Teri life mein hamesha khushiyan rahe</p>
+                        <p>🌈 Tere sapne poore ho</p>
+                        <p>😊 Tujhe gussa kam aaye (thoda toh aaye, warna Angry Bird nahi rahegi! 😂)</p>
+                        <p>😴 Tujhe bharpur neend mile (yeh toh already mil hi rahi hai! 😄)</p>
+                        <p>💪 Tujhe success mile har field mein</p>
+                        <p>👯 Hamari friendship aur mazboot ho</p>
+                        <p><strong>Aur sabse important - tu hamesha healthy aur happy rahe! 💕</strong></p>
+                    </div>
+                    <div class="page-number">7</div>
+                </div>
+
+                <div class="page right-page blank-page" data-page="9">
+                    <div class="page-content" style="justify-content: flex-start; align-items: flex-start;">
+                        <h2 style="text-align: center; width: 100%;">Teri Baatein ✍️</h2>
+                        <p style="text-align: center; font-style: italic; color: #c2185b;">Yahan tu apni feelings, thoughts, ya kuch bhi likh sakti hai!</p>
+                        <div style="height: 300px; width: 100%;"></div>
+                    </div>
+                    <div class="page-number">9</div>
+                </div>
+
+                <div class="page right-page" data-page="11">
+                    <div class="page-content">
+                        <h2>The End... Nahi! ✨</h2>
+                        <p><strong>Yeh ending nahi hai...</strong></p>
+                        <p>Yeh to bas ek nayi shuruaat hai! 🌅</p>
+                        <p>Agle saal bhi, uske baad bhi, hamesha... hamari friendship aise hi chalti rahegi!</p>
+                        <p>Aur haan, agli baar tujhe aur better gift dunga! 😄</p>
+                        <div class="joke-box">
+                            <p><em>"Khush raho, Muskurati raho,<br>Aur haan... thoda gussa bhi karti raho,<br>Warna Angry Bird nahi rahegi! 😂💕"</em></p>
+                        </div>
+                        <p><strong>You're the best, my dear Angry Bird! 🐦❤️</strong></p>
+                    </div>
+                    <div class="page-number">11</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" onclick="previousPage()">◀ Previous</button>
+        <button id="nextBtn" onclick="nextPage()">Next ▶</button>
+    </div>
+
+    <script>
+        let currentSpread = 0;
+        const totalSpreads = 6;
+
+        function updatePages() {
+            const allPages = document.querySelectorAll('.page');
+            allPages.forEach(page => page.classList.remove('active'));
+
+            const leftPage = currentSpread * 2;
+            const rightPage = leftPage + 1;
+
+            const leftPageElement = document.querySelector(`[data-page="${leftPage}"]`);
+            const rightPageElement = document.querySelector(`[data-page="${rightPage}"]`);
+
+            if (leftPageElement) leftPageElement.classList.add('active');
+            if (rightPageElement) rightPageElement.classList.add('active');
+
+            updateButtons();
+            updateIndicator();
+        }
+
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = currentSpread === 0;
+            document.getElementById('nextBtn').disabled = currentSpread >= totalSpreads;
+        }
+
+        function updateIndicator() {
+            const pageNum = (currentSpread * 2) + 1;
+            document.getElementById('pageIndicator').textContent = `Page ${pageNum}-${pageNum + 1} of 12`;
+        }
+
+        function nextPage() {
+            if (currentSpread < totalSpreads) {
+                currentSpread++;
+                updatePages();
+            }
+        }
+
+        function previousPage() {
+            if (currentSpread > 0) {
+                currentSpread--;
+                updatePages();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft') previousPage();
+        });
+
+        updatePages();
+    </script>
+</body>
+</html>
